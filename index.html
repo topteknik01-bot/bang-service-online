@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102d46">
+<title>BANG SERVICE</title>
+<style>
+:root{--navy:#102d46;--blue:#1d4e70;--bg:#f3f6f9;--card:#fff;--text:#152536;--muted:#637487;--green:#157957;--red:#b42318;--line:#e1e8ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:var(--navy);color:#fff;padding:20px 16px 18px;border-radius:0 0 22px 22px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:14px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:24px;font-weight:900}
+h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:#d4e1eb;font-size:12px}
+main{max-width:760px;margin:auto;padding:14px 14px 90px}.balance{margin-top:16px;background:#1b405a;border-radius:16px;padding:15px}.balance small{color:#d4e1eb}.balance strong{display:block;font-size:27px;margin-top:4px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:15px 0}.tab{border:0;border-radius:12px;padding:12px 5px;background:#e3eaf0;color:var(--navy);font-weight:700}.tab.active{background:var(--navy);color:#fff}
+.panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px #15253608}
+h2{font-size:17px;margin:0 0 12px}h3{font-size:15px;margin:0 0 7px}
+label{display:block;font-size:13px;font-weight:650;margin:10px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #cbd6df;border-radius:10px;font:inherit;background:#fff;color:var(--text)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer}.primary{width:100%;border:0;border-radius:11px;background:var(--navy);color:white;padding:13px;font-weight:750;margin-top:14px}.secondary{border:1px solid #cbd6df;border-radius:10px;background:#fff;padding:9px 11px;color:var(--navy);font-weight:650}.danger{color:var(--red);border-color:#f0c4c0}
+.calc{background:#f0f5f8;border-radius:12px;padding:12px;margin-top:12px}.calcrow{display:flex;justify-content:space-between;gap:12px;margin:6px 0}.muted{color:var(--muted);font-size:12px}.amount{font-weight:800}.green{color:var(--green)}.red{color:var(--red)}
+.job{border:1px solid var(--line);border-radius:13px;padding:13px;margin-top:10px}.jobtop{display:flex;justify-content:space-between;gap:10px}.pill{font-size:11px;border-radius:99px;background:#e6f5ed;color:#176749;padding:4px 8px;height:max-content}.pill.warn{background:#fff2d8;color:#8a5800}.job p{margin:5px 0;color:var(--muted);font-size:13px}.jobactions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.jobactions button{flex:1;min-width:120px}
+.entry{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.entry:last-child{border-bottom:0}.empty{color:var(--muted);text-align:center;padding:22px 5px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}.footer{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;border-top:1px solid var(--line);padding:9px 14px calc(9px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:380px){.grid{grid-template-columns:1fr}.balance strong{font-size:24px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">B</div><div><h1>BANG SERVICE</h1><p>Manajemen servis AC • Kulkas • Mesin Cuci</p></div></div>
+ <div class="balance"><small>SALDO KAS SAAT INI</small><strong id="balance">Rp0</strong><small id="jobCount">0 pekerjaan tercatat</small></div>
+</header>
+
+<div id="cloudGate" style="position:fixed;inset:0;z-index:9999;background:#edf3f0;display:flex;align-items:center;justify-content:center;padding:18px">
+ <div style="width:min(100%,420px);background:#fff;border-radius:18px;padding:24px;box-shadow:0 12px 40px #1232">
+  <h2 style="margin-top:0;color:#157957">BANG SERVICE ONLINE</h2>
+  <p style="color:#637487">Masuk untuk membuka data usaha yang tersimpan online.</p>
+  <label for="cloudEmail">Email akun Firebase</label><input id="cloudEmail" type="email" autocomplete="username" style="width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccd8d2;border-radius:10px">
+  <label for="cloudPassword">Password</label><input id="cloudPassword" type="password" autocomplete="current-password" style="width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccd8d2;border-radius:10px">
+  <button id="cloudLogin" style="width:100%;padding:12px;background:#157957;color:white;border:0;border-radius:10px;font-weight:700">Masuk</button>
+  <p id="cloudMessage" style="font-size:13px;color:#9b2c2c"></p>
+  <p style="font-size:12px;color:#637487">Akun harus dibuat oleh pemilik proyek di Firebase Authentication. Jangan bagikan password.</p>
+ </div>
+</div>
+<div id="cloudStatus" style="position:sticky;top:0;z-index:1000;text-align:center;padding:7px;background:#e6f4ed;color:#126447;font-size:12px">Menghubungkan ke database online…</div>
+
+<main>
+ <nav class="tabs">
+  <button class="tab active" data-tab="tagihan">Tagihan</button>
+  <button class="tab" data-tab="pembagian">Pembagian</button>
+  <button class="tab" data-tab="kas">Kas</button>
+ </nav>
+ <section class="panel active" id="tagihan">
+  <div class="card">
+   <h2>Tambah Tagihan</h2>
+   <form id="jobForm">
+    <label for="customer">Nama pelanggan</label><input id="customer" required maxlength="100" placeholder="Nama pelanggan">
+    <div class="grid"><div><label for="phone">Nomor WhatsApp (opsional)</label><input id="phone" inputmode="tel" maxlength="25" placeholder="08xxxxxxxxxx"></div><div><label for="address">Alamat pelanggan (opsional)</label><input id="address" maxlength="180" placeholder="Alamat lokasi servis"></div></div>
+    <label for="service">Jenis pekerjaan</label><select id="service"><option>Servis AC</option><option>Bongkar - Pasang AC</option><option>Pasang AC</option><option>Perbaikan PCB</option><option>Perbaikan kulkas</option><option>Perbaikan mesin cuci</option><option>Lainnya</option></select>
+    <div id="otherDetailWrap" hidden><label for="otherDetail">Keterangan pekerjaan lainnya</label><input id="otherDetail" maxlength="160" placeholder="Contoh: pemasangan pompa air"></div>
+    <div class="grid"><div><label for="bill">Tagihan (Rp)</label><input id="bill" type="number" min="1" step="1" required placeholder="300000"></div><div><label for="capital">Modal (Rp)</label><input id="capital" type="number" min="0" step="1" value="0" required></div></div>
+    <div class="calc"><div class="calcrow"><span>Hasil setelah modal</span><strong id="netPreview">Rp0</strong></div><div class="calcrow"><span>Teknisi (60%)</span><strong id="techPreview">Rp0</strong></div><div class="calcrow"><span>BANG SERVICE (40%)</span><strong id="ownerPreview">Rp0</strong></div></div>
+    <p class="note">Modal dianggap sudah dibayar dari kas saat tagihan disimpan. Masukkan modal aktual, bukan perkiraan.</p>
+    <button class="primary" type="submit">Simpan Tagihan</button>
+   </form>
+  </div>
+  <div class="card"><h2>Daftar Pekerjaan</h2><div id="jobsList" class="empty">Belum ada pekerjaan. Tambahkan tagihan pertama.</div></div>
+ </section>
+ <section class="panel" id="pembagian">
+  <div class="card"><h2>Rekap Pembagian Hasil</h2><div id="shareSummary"></div></div>
+  <div class="card"><h2>Rincian Pekerjaan</h2><div id="shareJobs" class="empty">Belum ada data.</div></div>
+ </section>
+ <section class="panel" id="kas">
+  <div class="card"><h2>Kas Otomatis</h2><div class="calc"><div class="calcrow"><span>Total uang masuk</span><strong id="cashIn">Rp0</strong></div><div class="calcrow"><span>Total uang keluar</span><strong id="cashOut">Rp0</strong></div><div class="calcrow"><span>Saldo kas</span><strong id="cashBalance">Rp0</strong></div></div><p class="note">Kas bertambah saat pembayaran pelanggan dicatat. Kas berkurang saat modal pekerjaan dan pembayaran teknisi dicatat.</p></div>
+  <div class="card"><h2>Catat Kas Lainnya</h2><form id="otherCashForm"><label for="cashType">Jenis transaksi</label><select id="cashType"><option value="OTHER_IN">Kas masuk lainnya</option><option value="OTHER_OUT">Kas keluar lainnya</option></select><label for="cashAmount">Jumlah (Rp)</label><input id="cashAmount" type="number" min="1" step="1" required placeholder="50000"><label for="cashNote">Catatan</label><input id="cashNote" required maxlength="120" placeholder="Contoh: beli perlengkapan"><button class="primary" type="submit">Simpan Transaksi Kas</button></form></div>
+  <div class="card"><h2>Riwayat Kas</h2><div id="cashList" class="empty">Belum ada transaksi kas.</div></div>
+ </section>
+ <div class="card"><h3>Data online dan cadangan</h3><p class="note">Data utama disimpan di Cloud Firestore setelah login dan koneksi berhasil. Cadangan JSON tetap tersedia sebagai salinan manual.</p><div class="jobactions"><button class="secondary" id="exportBtn">Cadangkan data</button><button class="secondary" id="importBtn">Pulihkan cadangan</button><input type="file" id="importFile" accept="application/json" hidden></div></div>
+</main>
+<div class="footer">BANG SERVICE • Versi online • Cadangkan data secara berkala</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyAErTLfR4GaMvmjCnCuvpyJA7lqBtIx0PU", authDomain: "bang-service-online.firebaseapp.com", projectId: "bang-service-online", storageBucket: "bang-service-online.firebasestorage.app", messagingSenderId: "211994921663", appId: "1:211994921663:web:0460c12c57fd756ada540a" };
+const fbApp=initializeApp(firebaseConfig), auth=getAuth(fbApp), db=getFirestore(fbApp), dataRef=doc(db,"businessData","main");
+let cloudReady=false, applyingCloud=false, saveTimer=null, unsubscribeCloud=null;
+const cloudStatus=document.querySelector("#cloudStatus"), cloudGate=document.querySelector("#cloudGate");
+function setCloudMessage(msg){document.querySelector("#cloudMessage").textContent=msg;}
+function setStatus(msg){cloudStatus.textContent=msg;}
+document.querySelector("#cloudLogin").addEventListener("click",async()=>{const email=document.querySelector("#cloudEmail").value.trim(),password=document.querySelector("#cloudPassword").value;if(!email||!password){setCloudMessage("Masukkan email dan password.");return;}try{await signInWithEmailAndPassword(auth,email,password);setCloudMessage("");}catch(e){setCloudMessage("Gagal masuk. Periksa email/password dan pastikan akun sudah dibuat di Firebase.");}});
+const KEY='bangServiceLocalV1';
+let state={jobs:[],cash:[]};
+const serviceSelect=document.querySelector('#service');
+const otherDetailWrap=document.querySelector('#otherDetailWrap');
+serviceSelect.addEventListener('change',()=>{otherDetailWrap.hidden=serviceSelect.value!=='Lainnya';if(serviceSelect.value!=='Lainnya')document.querySelector('#otherDetail').value='';});
+const fmt=n=>'Rp'+Math.round(Number(n)||0).toLocaleString('id-ID');
+const id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function loadLocal(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&Array.isArray(v.jobs)&&Array.isArray(v.cash))state=v;}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));render();if(cloudReady&&!applyingCloud){setStatus("Menyimpan perubahan online…");clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{try{await setDoc(dataRef,{jobs:state.jobs,cash:state.cash,updatedAt:Date.now(),updatedBy:auth.currentUser.uid});setStatus("Tersinkron online ✓");}catch(e){setStatus("Gagal menyimpan online. Periksa koneksi dan aturan Firestore.");}},500);}}
+function cash(type,amount,note,jobId=null){state.cash.unshift({id:id(),type,amount:Number(amount),note,jobId,at:Date.now()});}
+function signed(e){return ['CUSTOMER_PAYMENT','OTHER_IN'].includes(e.type)?e.amount:-e.amount}
+function balance(){return state.cash.reduce((s,e)=>s+signed(e),0)}
+function net(j){return j.bill-j.capital}
+function tech(j){return Math.floor(net(j)*.6)}
+function owner(j){return net(j)-tech(j)}
+function updatePreview(){let b=Math.max(0,Number(document.querySelector('#bill').value)||0),c=Math.max(0,Number(document.querySelector('#capital').value)||0),n=Math.max(0,b-c),t=Math.floor(n*.6);document.querySelector('#netPreview').textContent=fmt(n);document.querySelector('#techPreview').textContent=fmt(t);document.querySelector('#ownerPreview').textContent=fmt(n-t)}
+document.querySelector('#bill').addEventListener('input',updatePreview);document.querySelector('#capital').addEventListener('input',updatePreview);
+document.querySelector('#jobForm').addEventListener('submit',e=>{e.preventDefault();const customer=document.querySelector('#customer').value.trim(),phone=document.querySelector('#phone').value.trim(),address=document.querySelector('#address').value.trim(),serviceBase=document.querySelector('#service').value,otherDetail=document.querySelector('#otherDetail').value.trim(),service=serviceBase==='Lainnya'?(otherDetail?'Lainnya: '+otherDetail:'Lainnya'):serviceBase,bill=Number(document.querySelector('#bill').value),capital=Number(document.querySelector('#capital').value);if(!customer||!Number.isSafeInteger(bill)||bill<=0||!Number.isSafeInteger(capital)||capital<0||capital>bill||(serviceBase==='Lainnya'&&!otherDetail)){alert('Periksa nama, tagihan, dan modal. Jika memilih Lainnya, isi keterangannya. Modal tidak boleh lebih besar dari tagihan.');return;}const j={id:id(),customer,phone,address,service,bill,capital,paid:0,techPaid:false,at:Date.now()};state.jobs.unshift(j);if(capital>0)cash('CAPITAL',capital,'Modal pekerjaan: '+customer,j.id);save();e.target.reset();document.querySelector('#capital').value='0';otherDetailWrap.hidden=true;updatePreview();alert('Tagihan tersimpan. Kas akan bertambah saat pembayaran pelanggan dicatat.');});
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));}));
+function openWhatsApp(jobId){const j=state.jobs.find(x=>x.id===jobId);if(!j||!j.phone)return;let digits=j.phone.replace(/\\D/g,'');if(digits.startsWith('0'))digits='62'+digits.slice(1);if(!digits.startsWith('62'))digits='62'+digits;window.open('https://wa.me/'+digits,'_blank','noopener');}
+function recordPayment(jobId){const j=state.jobs.find(x=>x.id===jobId);if(!j)return;const remaining=j.bill-j.paid;if(remaining<=0)return;const raw=prompt('Masukkan jumlah pembayaran yang diterima (sisa '+fmt(remaining)+')',String(remaining));if(raw===null)return;const amount=Number(raw);if(!Number.isSafeInteger(amount)||amount<=0||amount>remaining){alert('Jumlah pembayaran tidak valid.');return;}j.paid+=amount;cash('CUSTOMER_PAYMENT',amount,'Pembayaran pelanggan: '+j.customer,j.id);save();}
+function payTech(jobId){const j=state.jobs.find(x=>x.id===jobId);if(!j)return;if(j.paid<j.bill){alert('Tagihan harus lunas sebelum bagian teknisi dibayarkan.');return;}if(j.techPaid){alert('Bagian teknisi sudah dibayar.');return;}if(balance()<tech(j)){alert('Saldo kas tidak cukup untuk pembayaran teknisi.');return;}if(!confirm('Bayar bagian teknisi '+fmt(tech(j))+' untuk '+j.customer+'?'))return;j.techPaid=true;cash('TECHNICIAN_PAYOUT',tech(j),'Pembayaran teknisi: '+j.customer,j.id);save();}
+function renderJobs(){const el=document.querySelector('#jobsList');if(!state.jobs.length){el.className='empty';el.textContent='Belum ada pekerjaan. Tambahkan tagihan pertama.';return;}el.className='';el.innerHTML=state.jobs.map(j=>`<div class="job"><div class="jobtop"><div><h3>${esc(j.customer)}</h3><p>${esc(j.service)} • ${new Date(j.at).toLocaleDateString('id-ID')}</p>${j.phone?`<p>WhatsApp: ${esc(j.phone)}</p>`:''}${j.address?`<p>Alamat: ${esc(j.address)}</p>`:''}</div><span class="pill ${j.paid<j.bill?'warn':''}">${j.paid>=j.bill?'Lunas':'Belum lunas'}</span></div><div class="calcrow"><span>Tagihan</span><strong>${fmt(j.bill)}</strong></div><div class="calcrow"><span>Modal</span><strong>${fmt(j.capital)}</strong></div><div class="calcrow"><span>Sisa tagihan</span><strong>${fmt(j.bill-j.paid)}</strong></div><div class="calcrow"><span>Teknisi 60%</span><strong>${fmt(tech(j))}</strong></div><div class="calcrow"><span>BANG SERVICE 40%</span><strong>${fmt(owner(j))}</strong></div><div class="jobactions">${j.phone?`<button class="secondary" onclick="openWhatsApp('${j.id}')">Hubungi WhatsApp</button>`:''}${j.paid<j.bill?`<button class="secondary" onclick="recordPayment('${j.id}')">Catat pembayaran</button>`:''}${!j.techPaid?`<button class="secondary" onclick="payTech('${j.id}')" ${j.paid<j.bill?'disabled':''}>Bayar teknisi</button>`:'<span class="pill">Teknisi dibayar</span>'}</div></div>`).join('')}
+function renderShares(){let totalNet=0,totalTech=0,totalOwner=0;state.jobs.forEach(j=>{totalNet+=net(j);totalTech+=tech(j);totalOwner+=owner(j)});document.querySelector('#shareSummary').innerHTML=`<div class="calcrow"><span>Total hasil setelah modal</span><strong>${fmt(totalNet)}</strong></div><div class="calcrow"><span>Bagian teknisi (60%)</span><strong>${fmt(totalTech)}</strong></div><div class="calcrow"><span>Bagian BANG SERVICE (40%)</span><strong>${fmt(totalOwner)}</strong></div>`;const el=document.querySelector('#shareJobs');if(!state.jobs.length){el.className='empty';el.textContent='Belum ada data.';return;}el.className='';el.innerHTML=state.jobs.map(j=>`<div class="entry"><div><strong>${esc(j.customer)}</strong><div class="muted">${esc(j.service)} • bersih ${fmt(net(j))}</div><div class="muted">Teknisi: ${j.techPaid?'sudah dibayar':'belum dibayar'}</div></div><div style="text-align:right"><strong>${fmt(tech(j))}</strong><div class="muted">Teknisi 60%</div><strong>${fmt(owner(j))}</strong><div class="muted">BANG SERVICE 40%</div></div></div>`).join('')}
+function renderCash(){let ins=0,outs=0;state.cash.forEach(e=>{if(signed(e)>=0)ins+=e.amount;else outs+=e.amount});document.querySelector('#cashIn').textContent=fmt(ins);document.querySelector('#cashOut').textContent=fmt(outs);document.querySelector('#cashBalance').textContent=fmt(balance());const el=document.querySelector('#cashList');if(!state.cash.length){el.className='empty';el.textContent='Belum ada transaksi kas.';return;}el.className='';el.innerHTML=state.cash.map(e=>`<div class="entry"><div><strong>${esc(e.note)}</strong><div class="muted">${new Date(e.at).toLocaleString('id-ID')}</div></div><strong class="${signed(e)>=0?'green':'red'}">${signed(e)>=0?'+':'−'}${fmt(e.amount)}</strong></div>`).join('')}
+function render(){document.querySelector('#balance').textContent=fmt(balance());document.querySelector('#jobCount').textContent=state.jobs.length+' pekerjaan tercatat';renderJobs();renderShares();renderCash();}
+document.querySelector('#otherCashForm').addEventListener('submit',e=>{e.preventDefault();let type=document.querySelector('#cashType').value,amount=Number(document.querySelector('#cashAmount').value),note=document.querySelector('#cashNote').value.trim();if(!Number.isSafeInteger(amount)||amount<=0||!note){alert('Periksa jumlah dan catatan.');return;}if(type==='OTHER_OUT'&&balance()<amount){alert('Saldo kas tidak cukup.');return;}cash(type,amount,note);save();e.target.reset();alert('Transaksi kas tersimpan.');});
+document.querySelector('#exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cadangan-bang-service-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);});
+document.querySelector('#importBtn').addEventListener('click',()=>document.querySelector('#importFile').click());
+document.querySelector('#importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const v=JSON.parse(await f.text());if(!Array.isArray(v.jobs)||!Array.isArray(v.cash))throw Error();if(!confirm('Pulihkan cadangan? Data yang ada di browser ini akan diganti.'))return;state={jobs:v.jobs,cash:v.cash};save();alert('Cadangan berhasil dipulihkan.');}catch(err){alert('File cadangan tidak valid.');}e.target.value='';});
+loadLocal();render();updatePreview();
+onAuthStateChanged(auth, async user=>{
+ if(unsubscribeCloud){unsubscribeCloud();unsubscribeCloud=null;}
+ if(!user){cloudReady=false;cloudGate.style.display="flex";setStatus("Belum login");return;}
+ cloudGate.style.display="none";setStatus("Mengambil data dari database online…");
+ try{
+  const snap=await getDoc(dataRef);
+  if(snap.exists()){
+   const remote=snap.data(); if(Array.isArray(remote.jobs)&&Array.isArray(remote.cash)){applyingCloud=true;state={jobs:remote.jobs,cash:remote.cash};localStorage.setItem(KEY,JSON.stringify(state));render();applyingCloud=false;}
+  } else {
+   const local=JSON.parse(localStorage.getItem(KEY)||"null");
+   if(local&&Array.isArray(local.jobs)&&Array.isArray(local.cash)&&(local.jobs.length||local.cash.length)){
+    if(confirm("Database online masih kosong. Salin data lokal dari browser ini ke database online? Pilih Batal jika tidak ingin menyalin.")){await setDoc(dataRef,{jobs:local.jobs,cash:local.cash,updatedAt:Date.now(),updatedBy:user.uid});}
+    else {state={jobs:[],cash:[]};localStorage.setItem(KEY,JSON.stringify(state));render();}
+   } else {await setDoc(dataRef,{jobs:[],cash:[],updatedAt:Date.now(),updatedBy:user.uid});}
+  }
+  cloudReady=true;setStatus("Tersinkron online ✓");
+  unsubscribeCloud=onSnapshot(dataRef,snap2=>{if(!snap2.exists())return;const d=snap2.data();if(!Array.isArray(d.jobs)||!Array.isArray(d.cash))return;applyingCloud=true;state={jobs:d.jobs,cash:d.cash};localStorage.setItem(KEY,JSON.stringify(state));render();applyingCloud=false;setStatus("Tersinkron online ✓");},err=>{setStatus("Sinkronisasi gagal: periksa aturan Firestore.");});
+ }catch(e){cloudReady=false;setStatus("Belum tersambung: periksa aturan Firestore dan koneksi internet.");cloudGate.style.display="flex";setCloudMessage("Akun berhasil login, tetapi database belum bisa diakses. Periksa Rules Firestore.");}
+});
+window.openWhatsApp=openWhatsApp;window.recordPayment=recordPayment;window.payTech=payTech;
+</script>
+</body>
+</html>
